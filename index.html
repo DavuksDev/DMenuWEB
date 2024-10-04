@@ -17,12 +17,11 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #222;
+            background-color: rgb(32, 31, 42);
             color: white;
             font-family: 'CodecCold', sans-serif;
             position: relative;
             overflow: hidden;
-            transition: background-color 0.3s ease-in-out; /* Плавный переход фона страницы */
         }
         
         h1 {
@@ -47,7 +46,7 @@
         }
         
         .button:hover {
-            background-color: violet; /* Цвет кнопки не меняется, только фон страницы */
+            background-color: violet;
         }
         
         .discord {
@@ -58,14 +57,14 @@
             border-radius: 8px;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s ease-in-out; /* Переход для эффекта */
+            transition: background-color 0.3s ease-in-out;
             font-family: 'CodecCold', sans-serif;
             position: relative;
             z-index: 2;
         }
 
         .discord:hover {
-            background-color: rgb(32, 31, 42); /* Цвет, к которому плавно перейдет фон страницы */
+            background-color: #5b6eae;
         }
 
         .background-image {
@@ -74,40 +73,62 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-size: contain; /* Чтобы изображение не растягивалось */
+            background-size: contain;
             background-position: center;
             opacity: 0;
-            transition: opacity 0.5s, background-color 0.5s; /* Плавное появление изображения и фона */
-            z-index: -1; /* Позади других элементов */
-            background-repeat: no-repeat; /* Без повторения изображения */
-            background-color: rgb(32, 31, 42); /* Цвет фона, чтобы плавно сливался с изображением */
+            transition: opacity 0.5s, background-color 0.5s ease-in-out;
+            z-index: -1;
+            background-repeat: no-repeat;
+            background-color: rgb(32, 31, 42);
             mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
         .background-image-get-it {
-            background-size: contain; /* Изображение уменьшено и по центру */
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            background-color: rgb(32, 31, 42); /* Переход к основному цвету страницы */
+            background-color: rgb(32, 31, 42);
+        }
+
+        .author {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 18px;
+            color: white;
+            text-shadow: 0 0 10px violet, 0 0 20px violet, 0 0 30px violet;
+            font-family: 'CodecCold', sans-serif;
         }
     </style>
 </head>
 <body>
     <h1>DMenu</h1>
     <button class="button" 
-            onmouseover="showBackground('DMenu_00000.png', true); changeBodyBackgroundColor(true)"
-            onmouseout="hideBackground(); changeBodyBackgroundColor(false)">Get It Now</button>
+            onmouseover="scheduleBackgroundChange('DMenu_00000.png', true)"
+            onmouseout="cancelBackgroundChange()">Get It Now</button>
     <button class="discord" 
-            onmouseover="showBackground('DMENU.png', false); changeBodyBackgroundColor(false)"
-            onmouseout="hideBackground(); changeBodyBackgroundColor(false)">Discord</button>
+            onmouseover="scheduleBackgroundChange('DMENU.png', false)"
+            onmouseout="cancelBackgroundChange()">Discord</button>
 
     <div class="background-image" id="background"></div>
 
+    <div class="author">By: DavuksDev</div>
+
     <script>
         let currentImage = '';
+        let backgroundChangeTimeout = null;
 
-        function downloadFile() {
-            window.location.href = 'https://github.com/DavuksDev/DMenu-Data/raw/refs/heads/main/DMenu.lol.dll';
+        function scheduleBackgroundChange(image, isGetItNow) {
+            // Очищаем предыдущий таймер, если был
+            if (backgroundChangeTimeout) {
+                clearTimeout(backgroundChangeTimeout);
+                backgroundChangeTimeout = null;
+            }
+
+            // Устанавливаем таймер для плавного изменения фона
+            backgroundChangeTimeout = setTimeout(() => {
+                showBackground(image, isGetItNow);
+            }, 150); // Задержка 150 мс
         }
 
         function showBackground(image, isGetItNow) {
@@ -120,20 +141,20 @@
             }
         }
 
+        function cancelBackgroundChange() {
+            // Отменяем планируемую смену фона, если мышь покидает кнопку
+            if (backgroundChangeTimeout) {
+                clearTimeout(backgroundChangeTimeout);
+                backgroundChangeTimeout = null;
+            }
+
+            hideBackground(); // Скрываем фон, если мышь уходит
+        }
+
         function hideBackground() {
             const background = document.getElementById('background');
             background.style.opacity = 0; // Скрыть изображение
             currentImage = ''; // Сбросить текущее изображение
-        }
-
-        // Функция для изменения фона страницы
-        function changeBodyBackgroundColor(isGetItNow) {
-            const body = document.body;
-            if (isGetItNow) {
-                body.style.backgroundColor = 'rgb(32, 31, 42)'; // Цвет для "Get It Now"
-            } else {
-                body.style.backgroundColor = '#222'; // Исходный цвет фона
-            }
         }
     </script>
 </body>
