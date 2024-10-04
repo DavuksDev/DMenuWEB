@@ -22,6 +22,7 @@
             font-family: 'CodecCold', sans-serif;
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s ease-in-out; /* Плавный переход фона страницы */
         }
         
         h1 {
@@ -39,13 +40,14 @@
             border-radius: 8px;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease-in-out;
             font-family: 'CodecCold', sans-serif;
             position: relative;
+            z-index: 2;
         }
         
         .button:hover {
-            background-color: #a66ae3;
+            background-color: violet; /* Цвет кнопки не меняется, только фон страницы */
         }
         
         .discord {
@@ -56,13 +58,14 @@
             border-radius: 8px;
             color: white;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease-in-out; /* Переход для эффекта */
             font-family: 'CodecCold', sans-serif;
             position: relative;
+            z-index: 2;
         }
 
         .discord:hover {
-            background-color: #5b6eae;
+            background-color: rgb(32, 31, 42); /* Цвет, к которому плавно перейдет фон страницы */
         }
 
         .background-image {
@@ -71,29 +74,32 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-size: cover;
+            background-size: contain; /* Чтобы изображение не растягивалось */
             background-position: center;
             opacity: 0;
-            transition: opacity 0.5s;
+            transition: opacity 0.5s, background-color 0.5s; /* Плавное появление изображения и фона */
             z-index: -1; /* Позади других элементов */
-            background-color: #333; /* Резервный цвет фона */
+            background-repeat: no-repeat; /* Без повторения изображения */
+            background-color: rgb(32, 31, 42); /* Цвет фона, чтобы плавно сливался с изображением */
+            mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
         .background-image-get-it {
-            background-size: contain; /* Сохраняет пропорции изображения */
-            background-repeat: no-repeat; /* Избегаем повторения изображения */
+            background-size: contain; /* Изображение уменьшено и по центру */
+            background-repeat: no-repeat;
             background-position: center;
+            background-color: rgb(32, 31, 42); /* Переход к основному цвету страницы */
         }
     </style>
 </head>
 <body>
     <h1>DMenu</h1>
     <button class="button" 
-            onmouseover="showBackground('DMenu_00000.png', true)"
-            onmouseout="hideBackground()">Get It Now</button>
+            onmouseover="showBackground('DMenu_00000.png', true); changeBodyBackgroundColor(true)"
+            onmouseout="hideBackground(); changeBodyBackgroundColor(false)">Get It Now</button>
     <button class="discord" 
-            onmouseover="showBackground('DMENU.png', false)"
-            onmouseout="hideBackground()">Discord</button>
+            onmouseover="showBackground('DMENU.png', false); changeBodyBackgroundColor(false)"
+            onmouseout="hideBackground(); changeBodyBackgroundColor(false)">Discord</button>
 
     <div class="background-image" id="background"></div>
 
@@ -118,6 +124,16 @@
             const background = document.getElementById('background');
             background.style.opacity = 0; // Скрыть изображение
             currentImage = ''; // Сбросить текущее изображение
+        }
+
+        // Функция для изменения фона страницы
+        function changeBodyBackgroundColor(isGetItNow) {
+            const body = document.body;
+            if (isGetItNow) {
+                body.style.backgroundColor = 'rgb(32, 31, 42)'; // Цвет для "Get It Now"
+            } else {
+                body.style.backgroundColor = '#222'; // Исходный цвет фона
+            }
         }
     </script>
 </body>
