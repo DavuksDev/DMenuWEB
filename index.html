@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMenu</title>
+    <style>
+        @font-face {
+            font-family: 'CodecCold';
+            src: url('Codec-Cold-ExtraBold-trial.ttf') format('truetype');
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #222;
+            color: white;
+            font-family: 'CodecCold', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 64px;
+            text-shadow: 0 0 20px violet;
+            margin-bottom: 30px;
+        }
+        
+        .button {
+            margin-top: 30px;
+            padding: 20px 40px;
+            font-size: 24px;
+            background-color: violet;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'CodecCold', sans-serif;
+            position: relative;
+        }
+        
+        .button:hover {
+            background-color: #a66ae3;
+        }
+        
+        .discord {
+            margin-top: 15px;
+            padding: 15px 30px;
+            background-color: #7289da;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'CodecCold', sans-serif;
+            position: relative;
+        }
+
+        .discord:hover {
+            background-color: #5b6eae;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: -1; /* Позади других элементов */
+            background-color: #333; /* Резервный цвет фона */
+        }
+
+        .background-image-get-it {
+            background-size: contain; /* Сохраняет пропорции изображения */
+            background-repeat: no-repeat; /* Избегаем повторения изображения */
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>DMenu</h1>
+    <button class="button" 
+            onmouseover="showBackground('DMenu_00000.png', true)"
+            onmouseout="hideBackground()">Get It Now</button>
+    <button class="discord" 
+            onmouseover="showBackground('DMENU.png', false)"
+            onmouseout="hideBackground()">Discord</button>
+
+    <div class="background-image" id="background"></div>
+
+    <script>
+        let currentImage = '';
+
+        function downloadFile() {
+            window.location.href = 'https://github.com/DavuksDev/DMenu-Data/raw/refs/heads/main/DMenu.lol.dll';
+        }
+
+        function showBackground(image, isGetItNow) {
+            const background = document.getElementById('background');
+            if (currentImage !== image) {
+                currentImage = image;
+                background.style.backgroundImage = `url(${image})`;
+                background.style.opacity = 1; // Показать изображение
+                background.className = isGetItNow ? 'background-image background-image-get-it' : 'background-image';
+            }
+        }
+
+        function hideBackground() {
+            const background = document.getElementById('background');
+            background.style.opacity = 0; // Скрыть изображение
+            currentImage = ''; // Сбросить текущее изображение
+        }
+    </script>
+</body>
+</html>
