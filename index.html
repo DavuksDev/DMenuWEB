@@ -47,7 +47,7 @@
         }
         
         .button:hover {
-            background-color: violet;
+            background-color: #a66ae3;
         }
         
         .discord {
@@ -117,8 +117,15 @@
             padding: 40px;
             border-radius: 10px;
             text-align: center;
-            display: none;
+            opacity: 0;
+            pointer-events: none; /* Чтобы нельзя было кликнуть на скрытое окно */
+            transition: opacity 0.5s ease-in-out;
             z-index: 5;
+        }
+
+        #patch-modal.active {
+            opacity: 1;
+            pointer-events: auto; /* Включаем кликабельность когда окно видно */
         }
 
         #patch-modal p {
@@ -145,8 +152,12 @@
 </head>
 <body>
     <h1>DMenu</h1>
-    <button class="button" id="downloadButton">Get It Now</button>
-    <button class="discord">Discord</button>
+    <button class="button" id="downloadButton" 
+        onmouseover="showBackground('DMenu_00000.png')" 
+        onmouseout="hideBackground()">Get It Now</button>
+    <button class="discord" 
+        onmouseover="showBackground('DMENU.png')" 
+        onmouseout="hideBackground()">Discord</button>
 
     <div class="background-image" id="background"></div>
 
@@ -179,14 +190,14 @@
                         window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
                     };
                 } else {
-                    // Показать сообщение о патче
+                    // Показать сообщение о патче с плавным появлением
                     downloadButton.onclick = function() {
-                        patchModal.style.display = 'block';
+                        patchModal.classList.add('active');
                     };
 
                     // Скачать последнюю версию патча по кнопке Ok
                     downloadPatchedButton.onclick = async function() {
-                        patchModal.style.display = 'none';
+                        patchModal.classList.remove('active'); // Закрытие окна
                         const latestReleaseUrl = await getLatestReleaseUrl();
                         if (latestReleaseUrl) {
                             window.location.href = latestReleaseUrl;
@@ -217,6 +228,25 @@
                 console.error('Error fetching latest release:', error);
                 return null;
             }
+        }
+
+        // Функция для плавной смены фона
+        function showBackground(image) {
+            const background = document.getElementById('background');
+            if (currentImage !== image) {
+                currentImage = image;
+                background.style.backgroundImage = `url(${image})`;
+                background.style.opacity = 1; // Показать изображение
+                clearTimeout(backgroundChangeTimeout);
+            }
+        }
+
+        function hideBackground() {
+            const background = document.getElementById('background');
+            backgroundChangeTimeout = setTimeout(() => {
+                background.style.opacity = 0; // Скрыть изображение
+                currentImage = ''; // Сбросить текущее изображение
+            }, 300); // Таймаут для плавного перехода между изображениями
         }
 
         // Запуск проверки после загрузки страницы
