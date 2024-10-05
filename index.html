@@ -102,70 +102,125 @@
             cursor: pointer;
         }
 
-        /* Новый стиль для показа изображения при наведении на текст */
         .author:hover ~ #background {
-            background-image: url('DavuksA.png'); /* Картинка из корневой папки */
+            background-image: url('DavuksA.png');
             opacity: 1;
+        }
+
+        /* Стили для окна с сообщением */
+        #patch-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(50, 50, 50, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 5;
+        }
+
+        #patch-modal p {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #patch-modal button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: violet;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        #patch-modal button:hover {
+            background-color: #a66ae3;
         }
     </style>
 </head>
 <body>
     <h1>DMenu</h1>
-    <a href="https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll" download>
-        <button class="button" 
-                onmouseover="scheduleBackgroundChange('DMenu_00000.png', true)"
-                onmouseout="cancelBackgroundChange()">Get It Now</button>
-    </a>
-    <button class="discord" 
-            onmouseover="scheduleBackgroundChange('DMENU.png', false)"
-            onmouseout="cancelBackgroundChange()">Discord</button>
+    <button class="button" id="downloadButton">Get It Now</button>
+    <button class="discord">Discord</button>
 
     <div class="background-image" id="background"></div>
 
     <div class="author">By: DavuksDev</div>
 
+    <!-- Модальное окно для патч-сообщения -->
+    <div id="patch-modal">
+        <p>DMenu is currently Patched. Wait for an announcement in Discord.</p>
+        <button id="downloadPatchedButton">Ok</button>
+    </div>
+
     <script>
         let currentImage = '';
         let backgroundChangeTimeout = null;
 
-        function scheduleBackgroundChange(image, isGetItNow) {
-            // Очищаем предыдущий таймер, если был
-            if (backgroundChangeTimeout) {
-                clearTimeout(backgroundChangeTimeout);
-                backgroundChangeTimeout = null;
+        // Чтение Data.txt и выполнение логики
+        async function checkPatchStatus() {
+            try {
+                const response = await fetch('Data.txt');
+                const text = await response.text();
+                const firstLine = text.split('\n')[0].trim();
+
+                const downloadButton = document.getElementById('downloadButton');
+                const patchModal = document.getElementById('patch-modal');
+                const downloadPatchedButton = document.getElementById('downloadPatchedButton');
+
+                if (firstLine === '1') {
+                    // Нормальная загрузка файла
+                    downloadButton.onclick = function() {
+                        window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
+                    };
+                } else {
+                    // Показать сообщение о патче
+                    downloadButton.onclick = function() {
+                        patchModal.style.display = 'block';
+                    };
+
+                    // Скачать последнюю версию патча по кнопке Ok
+                    downloadPatchedButton.onclick = async function() {
+                        patchModal.style.display = 'none';
+                        const latestReleaseUrl = await getLatestReleaseUrl();
+                        if (latestReleaseUrl) {
+                            window.location.href = latestReleaseUrl;
+                        } else {
+                            alert("Failed to retrieve the latest release.");
+                        }
+                    };
+                }
+            } catch (error) {
+                console.error('Error fetching patch status:', error);
             }
-
-            // Устанавливаем таймер для плавного изменения фона
-            backgroundChangeTimeout = setTimeout(() => {
-                showBackground(image, isGetItNow);
-            }, 150); // Задержка 150 мс
         }
 
-        function showBackground(image, isGetItNow) {
-            const background = document.getElementById('background');
-            if (currentImage !== image) {
-                currentImage = image;
-                background.style.backgroundImage = `url(${image})`;
-                background.style.opacity = 1; // Показать изображение
-                background.className = isGetItNow ? 'background-image background-image-get-it' : 'background-image';
+        // Получить URL последнего релиза из GitHub API
+        async function getLatestReleaseUrl() {
+            const apiUrl = 'https://api.github.com/repos/iiDk-the-actual/iis.Stupid.Menu/releases/latest';
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                const asset = data.assets.find(asset => asset.name === 'iis_Stupid_Menu.dll');
+                if (asset) {
+                    return asset.browser_download_url;
+                } else {
+                    console.error("Release asset not found.");
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error fetching latest release:', error);
+                return null;
             }
         }
 
-        function cancelBackgroundChange() {
-            // Отменяем планируемую смену фона, если мышь покидает кнопку
-            if (backgroundChangeTimeout) {
-                clearTimeout(backgroundChangeTimeout);
-                backgroundChangeTimeout = null;
-            }
-
-            hideBackground(); // Скрываем фон, если мышь уходит
-        }
-
-        function hideBackground() {
-            const background = document.getElementById('background');
-            background.style.opacity = 0; // Скрыть изображение
-            currentImage = ''; // Сбросить текущее изображение
-        }
+        // Запуск проверки после загрузки страницы
+        window.onload = checkPatchStatus;
     </script>
 </body>
 </html>
