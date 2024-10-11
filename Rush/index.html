@@ -6,8 +6,13 @@
     <meta name="description" content="Chimp Rush - fast-paced VR multiplayer game.">
     <title>Chimp Rush</title>
     <style>
+        @font-face {
+            font-family: 'CodecColdBold';
+            src: url('Codec-Cold-Bold-trial.ttf') format('truetype');
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'CodecColdBold', Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
@@ -56,10 +61,6 @@
             margin-bottom: 20px;
         }
 
-        ul {
-            list-style-type: none;
-        }
-
         .gallery {
             display: flex;
             justify-content: center;
@@ -80,6 +81,10 @@
             text-decoration: none;
             border-radius: 5px;
             margin-top: 20px;
+        }
+
+        .hidden {
+            display: none;
         }
 
         footer {
@@ -124,17 +129,17 @@
     <section id="screenshots" class="section">
         <h2>Screenshots</h2>
         <div class="gallery">
-            <img src="screenshot1.jpg" alt="Screenshot 1">
-            <img src="screenshot2.jpg" alt="Screenshot 2">
-            <img src="screenshot3.jpg" alt="Screenshot 3">
+            <img src="images/screenshot1.jpg" alt="Screenshot 1">
+            <img src="images/screenshot2.jpg" alt="Screenshot 2">
+            <img src="images/screenshot3.jpg" alt="Screenshot 3">
         </div>
     </section>
 
     <section id="download" class="section">
         <h2>Download</h2>
-        <p>Get Chimp Rush on the following platforms:</p>
-        <a href="oculus_store_link" class="button">Oculus Store</a>
-        <a href="steam_store_link" class="button">Steam</a>
+        <p>Get Chimp Rush on the following platform:</p>
+        <a href="https://www.meta.com/experiences/chimp-rush/8835135669853834" class="button">Oculus Store</a>
+        <a href="steam_store_link" class="button hidden">Steam</a>
     </section>
 
     <footer>
