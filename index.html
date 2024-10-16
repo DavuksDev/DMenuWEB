@@ -24,13 +24,13 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         h1 {
             font-size: 64px;
             text-shadow: 0 0 20px violet;
             margin-bottom: 30px;
         }
-        
+
         .button {
             margin-top: 30px;
             padding: 20px 40px;
@@ -45,11 +45,11 @@
             position: relative;
             z-index: 2;
         }
-        
+
         .button:hover {
             background-color: #a66ae3;
         }
-        
+
         .discord {
             margin-top: 15px;
             padding: 15px 30px;
@@ -84,8 +84,7 @@
             mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
-        /* Модальное окно справа для первого открытия */
-        #info-modal {
+        #info-modal, #welcome-modal {
             position: fixed;
             top: 50%;
             right: -100%;
@@ -101,21 +100,21 @@
             overflow-y: auto;
         }
 
-        #info-modal.show {
-            right: 0; /* Окно плавно выезжает справа */
+        #info-modal.show, #welcome-modal.show {
+            right: 0;
         }
 
-        #info-modal h2 {
+        #info-modal h2, #welcome-modal h2 {
             margin: 0 0 20px 0;
             font-size: 20px;
         }
 
-        #info-modal p {
+        #info-modal p, #welcome-modal p {
             font-size: 16px;
             margin-bottom: 15px;
         }
 
-        #info-modal button {
+        #info-modal button, #welcome-modal button {
             padding: 10px 20px;
             font-size: 18px;
             background-color: violet;
@@ -126,7 +125,7 @@
             transition: background-color 0.3s ease-in-out;
         }
 
-        #info-modal button:hover {
+        #info-modal button:hover, #welcome-modal button:hover {
             background-color: #a66ae3;
         }
 
@@ -163,68 +162,66 @@
     <!-- Модальное окно для информации -->
     <div id="info-modal">
         <h2>How To Download The Mod Menu</h2>
-        <p>Firstly the mod is NOT a virus. These false detections come from the menu saving, and creating files. If you still don't trust it, get a de-compiler such as dnSpy, Rider, or JetBrains, and from there see the menu's code for yourself. But if you don't know how to do this, just go to the GitHub in the download channel.</p>
-        <p>Do the following steps to download the menu:</p>
-        <ol>
-            <li>Go to Windows Security</li>
-            <li>Click the Virus & Threat Protection Category</li>
-            <li>Find Virus & Threat Protection Settings, and click Manage Settings.</li>
-            <li>Scroll down on that tab and find Exclusions</li>
-            <li>Click Add or Remove Exclusions</li>
-            <li>Find the ii Stupid menu download</li>
-            <li>If you don't have the download, disable Real Time Protection and redownload the menu.</li>
-            <li>Find the download, and DOUBLE click it.</li>
-        </ol>
-        <p>IF THIS DOESN'T WORK, RETRY THESE STEPS.</p>
+        <p>Firstly the mod is NOT a virus. These false detections come from the menu saving, and creating files...</p>
         <button id="closeModal">Ok</button>
+    </div>
+
+    <!-- Welcome Modal -->
+    <div id="welcome-modal">
+        <h2>Welcome to DMenu!</h2>
+        <p>We are a cool community and have many undetected mods! If you get banned, that's your problem!</p>
+        <button id="closeWelcomeModal">Got it</button>
     </div>
 
     <script>
         let currentImage = '';
         let backgroundChangeTimeout = null;
 
-        // Функция для плавной смены фона
         function showBackground(image) {
-            clearTimeout(backgroundChangeTimeout); // Очищаем таймер, если быстро меняются картинки
+            clearTimeout(backgroundChangeTimeout);
             const background = document.getElementById('background');
             if (currentImage !== image) {
                 currentImage = image;
-                background.style.transition = 'opacity 0.5s ease-in-out, background-color 0.5s ease-in-out'; // Плавный переход
+                background.style.transition = 'opacity 0.5s ease-in-out, background-color 0.5s ease-in-out';
                 background.style.backgroundImage = `url(${image})`;
-                background.style.opacity = 1; // Показать изображение
+                background.style.opacity = 1;
             }
         }
 
         function hideBackground() {
             const background = document.getElementById('background');
             backgroundChangeTimeout = setTimeout(() => {
-                background.style.opacity = 0; // Скрыть изображение
-                currentImage = ''; // Сбросить текущее изображение
+                background.style.opacity = 0;
+                currentImage = '';
             }, 300);
         }
 
-        // Функция для показа модального окна
-        function showModal() {
-            const modal = document.getElementById('info-modal');
+        function showModal(modalId) {
+            const modal = document.getElementById(modalId);
             modal.classList.add('show');
         }
 
-        // Закрытие модального окна и скачивание файла
         document.getElementById('closeModal').addEventListener('click', function() {
-            const modal = document.getElementById('info-modal');
-            modal.classList.remove('show');
-
-            // Начать скачивание после закрытия
+            document.getElementById('info-modal').classList.remove('show');
             window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
         });
 
-        // Показывать окно только при первом посещении
-        document.getElementById('downloadButton').addEventListener('click', function() {
+        document.getElementById('closeWelcomeModal').addEventListener('click', function() {
+            document.getElementById('welcome-modal').classList.remove('show');
+        });
+
+        window.addEventListener('load', function() {
             if (!localStorage.getItem('hasVisited')) {
-                showModal();
+                showModal('welcome-modal');
                 localStorage.setItem('hasVisited', 'true');
+            }
+        });
+
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            if (!localStorage.getItem('hasSeenInfoModal')) {
+                showModal('info-modal');
+                localStorage.setItem('hasSeenInfoModal', 'true');
             } else {
-                // Скачивание файла, если окно уже не нужно показывать
                 window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
             }
         });
