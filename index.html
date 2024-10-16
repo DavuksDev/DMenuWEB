@@ -84,7 +84,7 @@
             mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
-        #info-modal, #welcome-modal {
+        #info-modal, #fixedModal {
             position: fixed;
             top: 50%;
             right: -100%;
@@ -100,21 +100,21 @@
             overflow-y: auto;
         }
 
-        #info-modal.show, #welcome-modal.show {
+        #info-modal.show, #fixedModal.show {
             right: 0;
         }
 
-        #info-modal h2, #welcome-modal h2 {
+        #info-modal h2, #fixedModal h2 {
             margin: 0 0 20px 0;
             font-size: 20px;
         }
 
-        #info-modal p, #welcome-modal p {
+        #info-modal p, #fixedModal p {
             font-size: 16px;
             margin-bottom: 15px;
         }
 
-        #info-modal button, #welcome-modal button {
+        #info-modal button, #fixedModal button {
             padding: 10px 20px;
             font-size: 18px;
             background-color: violet;
@@ -125,7 +125,7 @@
             transition: background-color 0.3s ease-in-out;
         }
 
-        #info-modal button:hover, #welcome-modal button:hover {
+        #info-modal button:hover, #fixedModal button:hover {
             background-color: #a66ae3;
         }
 
@@ -166,11 +166,10 @@
         <button id="closeModal">Ok</button>
     </div>
 
-    <!-- Welcome Modal -->
-    <div id="welcome-modal">
-        <h2>Welcome to DMenu!</h2>
-        <p>We are a cool community and have many undetected mods! If you get banned, that's your problem!</p>
-        <button id="closeWelcomeModal">Got it</button>
+    <!-- Модальное окно для сообщения о статусе меню -->
+    <div id="fixedModal">
+        <h2>Menu is fixed or detected, use in privates!</h2>
+        <button id="closeFixedModal">Ok</button>
     </div>
 
     <script>
@@ -201,29 +200,29 @@
             modal.classList.add('show');
         }
 
-        document.getElementById('closeModal').addEventListener('click', function() {
-            document.getElementById('info-modal').classList.remove('show');
-            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
-        });
-
-        document.getElementById('closeWelcomeModal').addEventListener('click', function() {
-            document.getElementById('welcome-modal').classList.remove('show');
-        });
-
-        window.addEventListener('load', function() {
-            if (!localStorage.getItem('hasVisited')) {
-                showModal('welcome-modal');
-                localStorage.setItem('hasVisited', 'true');
-            }
-        });
+        function checkDownloadStatus() {
+            fetch('https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/Data.txt')
+                .then(response => response.text())
+                .then(data => {
+                    const status = data.trim();
+                    if (status === '0') {
+                        window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
+                    } else if (status === '1') {
+                        showModal('fixedModal');
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при проверке статуса скачивания:', error);
+                });
+        }
 
         document.getElementById('downloadButton').addEventListener('click', function() {
-            if (!localStorage.getItem('hasSeenInfoModal')) {
-                showModal('info-modal');
-                localStorage.setItem('hasSeenInfoModal', 'true');
-            } else {
-                window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
-            }
+            checkDownloadStatus();
+        });
+
+        document.getElementById('closeFixedModal').addEventListener('click', function() {
+            document.getElementById('fixedModal').classList.remove('show');
+            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
         });
     </script>
 </body>
