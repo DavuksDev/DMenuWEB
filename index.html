@@ -84,7 +84,7 @@
             mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
-        #info-modal, #welcome-modal {
+        #info-modal, #welcome-modal, #whats-new-modal {
             position: fixed;
             top: 50%;
             right: -100%;
@@ -100,21 +100,21 @@
             overflow-y: auto;
         }
 
-        #info-modal.show, #welcome-modal.show {
+        #info-modal.show, #welcome-modal.show, #whats-new-modal.show {
             right: 0;
         }
 
-        #info-modal h2, #welcome-modal h2 {
+        #info-modal h2, #welcome-modal h2, #whats-new-modal h2 {
             margin: 0 0 20px 0;
             font-size: 20px;
         }
 
-        #info-modal p, #welcome-modal p {
+        #info-modal p, #welcome-modal p, #whats-new-modal p {
             font-size: 16px;
             margin-bottom: 15px;
         }
 
-        #info-modal button, #welcome-modal button {
+        #info-modal button, #welcome-modal button, #whats-new-modal button {
             padding: 10px 20px;
             font-size: 18px;
             background-color: violet;
@@ -125,8 +125,13 @@
             transition: background-color 0.3s ease-in-out;
         }
 
-        #info-modal button:hover, #welcome-modal button:hover {
+        #info-modal button:hover, #welcome-modal button:hover, #whats-new-modal button:hover {
             background-color: #a66ae3;
+        }
+
+        #posts-container {
+            font-size: 16px;
+            margin-bottom: 15px;
         }
 
         .author {
@@ -140,7 +145,7 @@
             cursor: pointer;
         }
 
-        .author:hover ~ #background {
+        .author:hover ~ .background-image {
             background-image: url('DavuksA.png');
             opacity: 1;
         }
@@ -151,6 +156,7 @@
     <button class="button" id="downloadButton" 
         onmouseover="showBackground('DMenu_00000.png')" 
         onmouseout="hideBackground()">Get It Now</button>
+    <button class="button" id="whatsNewButton">What's New?</button>
     <button class="discord" 
         onclick="window.location.href='https://d-menu-data.vercel.app/Rush'" 
         onmouseover="showBackground('DMENU.png')" 
@@ -172,6 +178,13 @@
         <h2>Welcome to DMenu!</h2>
         <p>We are a cool community and have many undetected mods! If you get banned, that's your problem!</p>
         <button id="closeWelcomeModal">Got it</button>
+    </div>
+
+    <!-- New "What's New?" Modal -->
+    <div id="whats-new-modal">
+        <h2>What's New?</h2>
+        <div id="posts-container"></div>
+        <button id="closeWhatsNewModal">Close</button>
     </div>
 
     <script>
@@ -202,6 +215,32 @@
             modal.classList.add('show');
         }
 
+        async function fetchCommits() {
+            try {
+                const response = await fetch('https://api.github.com/repos/DavuksDev/DMenuWEB/commits');
+                const commits = await response.json();
+
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = ''; // Clear previous posts
+
+                commits.slice(0, 5).forEach(commit => {
+                    const post = document.createElement('div');
+                    const title = commit.commit.message.split('\n')[0];
+                    const description = commit.commit.message.split('\n').slice(1).join('\n') || 'No description provided.';
+
+                    post.innerHTML = `
+                        <h3>${title}</h3>
+                        <p>${description}</p>
+                        <hr>
+                    `;
+
+                    postsContainer.appendChild(post);
+                });
+            } catch (error) {
+                console.error('Error fetching commits:', error);
+            }
+        }
+
         document.getElementById('closeModal').addEventListener('click', function() {
             document.getElementById('info-modal').classList.remove('show');
             window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/DMenu.lol.dll';
@@ -209,6 +248,15 @@
 
         document.getElementById('closeWelcomeModal').addEventListener('click', function() {
             document.getElementById('welcome-modal').classList.remove('show');
+        });
+
+        document.getElementById('whatsNewButton').addEventListener('click', function() {
+            showModal('whats-new-modal');
+            fetchCommits(); // Fetch commits when the modal is shown
+        });
+
+        document.getElementById('closeWhatsNewModal').addEventListener('click', function() {
+            document.getElementById('whats-new-modal').classList.remove('show');
         });
 
         window.addEventListener('load', function() {
