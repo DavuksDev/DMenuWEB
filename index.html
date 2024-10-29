@@ -211,36 +211,6 @@
         document.getElementById('closeDownloadModal').addEventListener('click', function() {
             document.getElementById('download-modal').style.display = 'none';
         });
-    </script>
-
-    <script>
-        const downloadButton = document.getElementById('downloadButton');
-        const whatsNewButton = document.getElementById('whatsNewButton');
-
-        async function checkBotStatus() {
-            try {
-                const response = await fetch("https://dmenu.me/status");
-                if (response.ok) {
-                    downloadButton.disabled = false;
-                    downloadButton.style.opacity = 1;
-                    whatsNewButton.disabled = false;
-                    whatsNewButton.style.opacity = 1;
-                } else {
-                    throw new Error("Bot is offline");
-                }
-            } catch (error) {
-                downloadButton.disabled = true;
-                downloadButton.style.opacity = 0.5;
-                whatsNewButton.disabled = true;
-                whatsNewButton.style.opacity = 0.5;
-            }
-        }
-
-        // Проверка статуса бота каждые 30 секунд
-        setInterval(checkBotStatus, 30000);
-
-        // Первоначальная проверка при загрузке страницы
-        window.addEventListener('load', checkBotStatus);
-    </script>    
+    </script>  
 </body>
 </html>
