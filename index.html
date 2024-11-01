@@ -194,7 +194,7 @@
     <div id="download-modal">
         <h2>Select Download Type</h2>
         <button id="downloadDll">DLL</button>
-        <button id="downloadInstaller">Installer</button>
+        <button disabled id="downloadInstaller">Installer</button>
         <button id="closeDownloadModal">Close</button>
     </div>
 
@@ -310,5 +310,14 @@
             window.location.href = 'https://github.com/DavuksDev/DMenuWEB/commits/main';
         });
     </script>
+    <script>
+        // Ищем все кнопки с атрибутом disabled и меняем их стиль
+        document.querySelectorAll('button:disabled').forEach(button => {
+          button.style.backgroundColor = '#cccccc'; // серый фон
+          button.style.color = '#666666'; // цвет текста
+          button.style.border = '1px solid #999999'; // рамка
+          button.style.cursor = 'not-allowed'; // курсор "не доступно"
+        });
+      </script>
 </body>
 </html>
