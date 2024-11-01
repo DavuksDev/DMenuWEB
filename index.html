@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -110,7 +110,22 @@
             mask-image: radial-gradient(circle, rgba(255, 255, 255, 1) 60%, rgba(255, 255, 255, 0) 100%);
         }
 
-        #download-modal button {
+        #download-modal, #consent-modal, #cookie-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(64, 58, 117);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 10;
+            text-align: center;
+        }
+
+        #download-modal button,
+        #consent-modal button,
+        #cookie-modal button {
             padding: 10px 20px;
             font-size: 20px;
             background: linear-gradient(135deg, #6a5acd, #a66ae3);
@@ -120,19 +135,44 @@
             cursor: pointer;
             transition: background 0.3s ease-in-out, transform 0.2s;
             font-family: 'CodecCold', sans-serif;
-            margin: 5px;
+            margin: 10px 0;
             box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
         }
 
-        #download-modal button:hover {
+        #download-modal button:hover,
+        #consent-modal button:hover,
+        #cookie-modal button:hover {
             background: linear-gradient(135deg, #7b67f1, #b080e7);
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4);
         }
 
-        #closeDownloadModal {
+        #closeDownloadModal, #closeConsentModal {
             background-color: gray;
             margin-top: 15px;
+        }
+
+        #consent-message {
+            text-align: center;
+            color: white;
+        }
+
+        #message {
+            color: red;
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        #readAgreementButton {
+            margin-top: 20px;
+        }
+
+        .consent-buttons {
+            display: flex;
+            gap: 15px; /* Space between buttons */
+            justify-content: center;
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -143,7 +183,7 @@
     <button class="button discord" onclick="window.location.href='https://d-menu-data.vercel.app/Rush'">Discord</button>
 
     <div class="notification" id="updateNotification">
-        Вышло новое обновление!
+        A new update is available!
         <div class="progress-bar"></div>
     </div>
 
@@ -151,15 +191,45 @@
 
     <div class="author">By: DavuksDev</div>
 
-    <!-- Модальное окно для выбора загрузки -->
-    <div id="download-modal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: rgba(50, 50, 50, 0.9); padding: 20px; border-radius: 10px; z-index: 10;">
-        <h2>Выберите тип загрузки</h2>
+    <div id="download-modal">
+        <h2>Select Download Type</h2>
         <button id="downloadDll">DLL</button>
         <button id="downloadInstaller">Installer</button>
-        <button id="closeDownloadModal">Закрыть</button>
+        <button id="closeDownloadModal">Close</button>
+    </div>
+
+    <div id="consent-modal">
+        <div id="consent-message">
+            <h2>Do you agree to the user agreement?</h2>
+            <div class="consent-buttons">
+                <button id="yesConsent" class="button">Yes</button>
+                <button id="noConsent" class="button">No</button>
+            </div>
+            <div id="message">You must agree to the agreement.</div>
+            <br>
+            <a href="agree.html" class="button" id="readAgreementButton">Read the Agreement</a>
+        </div>
+    </div>
+
+    <div id="cookie-modal">
+        <p>This site uses cookies to improve your experience. Do you agree to the use of cookies?</p>
+        <button id="acceptCookies" class="button">Agree</button>
     </div>
 
     <script>
+        // Functions for cookie management
+        function setCookie(name, value, days) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+        }
+
+        function getCookie(name) {
+            return document.cookie.split('; ').reduce((r, v) => {
+                const parts = v.split('=');
+                return parts[0] === name ? decodeURIComponent(parts[1]) : r;
+            }, '');
+        }
+
         let currentImage = '';
         let backgroundChangeTimeout = null;
 
@@ -192,8 +262,17 @@
 
         window.addEventListener('load', function() {
             showNotification();
+            const consent = getCookie('userConsent');
+            const cookieConsent = getCookie('cookieConsent');
+
+            if (!consent) {
+                document.getElementById('consent-modal').style.display = 'block';
+            }
+
+            if (!cookieConsent) {
+                document.getElementById('cookie-modal').style.display = 'block';
+            }
         });
-        
 
         document.getElementById('downloadButton').addEventListener('click', function() {
             const downloadModal = document.getElementById('download-modal');
@@ -205,12 +284,31 @@
         });
 
         document.getElementById('downloadInstaller').addEventListener('click', function() {
-            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/releases/latest/download/DmenuInstaller.exe';
+            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/refs/heads/main/output/DMenu.installer.exe';
         });
 
         document.getElementById('closeDownloadModal').addEventListener('click', function() {
-            document.getElementById('download-modal').style.display = 'none';
+            const downloadModal = document.getElementById('download-modal');
+            downloadModal.style.display = 'none';
         });
-    </script>  
+
+        document.getElementById('yesConsent').addEventListener('click', function() {
+            setCookie('userConsent', 'accepted', 365); // Save consent for 365 days
+            document.getElementById('consent-modal').style.display = 'none';
+        });
+
+        document.getElementById('noConsent').addEventListener('click', function() {
+            document.getElementById('message').style.display = 'block';
+        });
+
+        document.getElementById('acceptCookies').addEventListener('click', function() {
+            setCookie('cookieConsent', 'accepted', 365); // Save cookie consent for 365 days
+            document.getElementById('cookie-modal').style.display = 'none';
+        });
+
+        document.getElementById('whatsNewButton').addEventListener('click', function() {
+            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/commits/main';
+        });
+    </script>
 </body>
 </html>
