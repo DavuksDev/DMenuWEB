@@ -1,4 +1,0 @@
-3.9.4
-6D855027D8D9781E;Davuks,842469CDDF83FC9A;╞,9B5E204BA59908F2;terry,6539DD7973229536;Phinik,4343BD3804603B65;Medik
-You are using build {0}. This menu was created by Davuks. Thanks for using it! This menu is completely free, if you paid for this menu you have been scammed. <color=red>Davuks, iiDk, am not responsible for any bans using this menu.</color> If you get banned while using this, it's your responsibility.
-//Current build {1} You are using build {0} <color=red>Servers are currently down.</color} Sorry
