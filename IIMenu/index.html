@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IIMenu - ii's Stupid Menu</title>
+    <style>
+        /* Подключение шрифта */
+        @font-face {
+            font-family: 'Codec Cold';
+            src: url('https://cdn.jsdelivr.net/gh/DavuksDev/DMenuWEB/Codec-Cold-ExtraBold-trial.ttf') format('truetype');
+            font-weight: 800;
+            font-style: normal;
+        }
+
+        /* Reset CSS */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Codec Cold', Arial, sans-serif;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ff6f61, #ffc107);
+            color: #fff;
+            text-align: center;
+            position: relative;
+        }
+
+        .container {
+            max-width: 600px;
+        }
+
+        .title {
+            font-size: 4rem;
+            margin: 0;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 1rem 2rem;
+            border: 2px solid #fff;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #fff;
+            color: #ff6f61;
+            transform: scale(1.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #fff;
+            color: #333;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+
+        .modal-content .button {
+            margin-top: 1rem;
+            background: #ff6f61;
+            color: #fff;
+        }
+
+        .modal-content .button:hover {
+            background: #ffc107;
+            color: #fff;
+        }
+
+        /* Footer Styles */
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.9rem;
+            color: #fff;
+            text-align: left;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .footer a:hover {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">IIMenu</h1>
+        <button class="button" id="openModal">Open Menu</button>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <p>Click the button below to download the DLL:</p>
+            <a class="button" id="dllButton" href="#" target="_blank">Download DLL</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        Powered by: <a href="https://dprod.com" target="_blank">DProd</a>, 
+        <a href="https://github.com" target="_blank">GitHub</a><br>
+        Made By: <a href="https://github.com/DavuksDev" target="_blank">Davuks</a>
+    </div>
+
+    <script>
+        const modal = document.getElementById('modal');
+        const openModal = document.getElementById('openModal');
+        const dllButton = document.getElementById('dllButton');
+
+        openModal.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Fetch latest release DLL link from GitHub
+        async function fetchLatestDLL() {
+            try {
+                const response = await fetch('https://api.github.com/repos/iiDk-the-actual/iis.Stupid.Menu/releases/latest');
+                const data = await response.json();
+                const assets = data.assets || [];
+                const dllAsset = assets.find(asset => asset.name.endsWith('.dll'));
+                if (dllAsset) {
+                    dllButton.href = dllAsset.browser_download_url;
+                } else {
+                    dllButton.textContent = 'DLL not available';
+                    dllButton.disabled = true;
+                }
+            } catch (error) {
+                dllButton.textContent = 'Error fetching DLL';
+                console.error('Failed to fetch DLL:', error);
+            }
+        }
+
+        fetchLatestDLL();
+    </script>
+</body>
+</html>
