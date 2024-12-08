@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DMenu</title>
+    <link rel="icon" href="icon.png" type="image/png">
+    <style>
+        @font-face {
+            font-family: 'CodecCold';
+            src: url('Codec-Cold-ExtraBold-trial.ttf') format('truetype');
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: rgb(32, 31, 42);
+            color: white;
+            font-family: 'CodecCold', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 64px;
+            text-shadow: 0 0 20px violet;
+            margin-bottom: 30px;
+        }
+
+        .button {
+            margin-top: 20px;
+            padding: 15px 35px;
+            font-size: 24px;
+            background: linear-gradient(135deg, #6a5acd, #a66ae3);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out, transform 0.2s;
+            font-family: 'CodecCold', sans-serif;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:hover {
+            background: linear-gradient(135deg, #7b67f1, #b080e7);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .discord {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #7289da, #5b6eae);
+        }
+
+        .author {
+            margin-top: 20px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #whats-new-modal,
+        #download-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgb(64, 58, 117);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            z-index: 10;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        #whats-new-modal h2,
+        #download-modal h2 {
+            margin-bottom: 15px;
+        }
+
+        #download-modal button {
+            width: 200px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            border: 1px solid #999999;
+            cursor: not-allowed;
+        }
+
+        .button.small {
+            padding: 10px 20px;
+            font-size: 18px;
+            box-shadow: none;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        ul li.green {
+            color: green;
+        }
+
+        ul li.red {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>DMenu</h1>
+    <button class="button" id="downloadButton">Get It Now</button>
+    <button class="button" id="whatsNewButton">What's New?</button>
+    <button class="button discord" onclick="window.location.href='https://d-menu-data.vercel.app/Rush'">Discord</button>
+    <div class="author">By: DavuksDev</div>
+
+    <div id="whats-new-modal">
+        <h2>What's New?</h2>
+        <ul id="changes-list"></ul>
+        <button id="closeWhatsNewModal" class="button small">Close</button>
+    </div>
+
+    <div id="download-modal">
+        <h2>Select Download Type</h2>
+        <div class="modal-buttons">
+            <button class="button small" id="downloadDll">DLL</button>
+            <button class="button small" disabled id="downloadInstaller">Installer</button>
+        </div>
+        <button id="closeDownloadModal" class="button small">Close</button>
+    </div>
+
+    <script>
+        const GITHUB_API_URL = 'https://api.github.com/repos/DavuksDev/DMenuWEB/commits/main';
+
+        document.getElementById('downloadButton').addEventListener('click', function () {
+            document.getElementById('download-modal').style.display = 'block';
+        });
+
+        document.getElementById('closeDownloadModal').addEventListener('click', function () {
+            document.getElementById('download-modal').style.display = 'none';
+        });
+
+        document.getElementById('downloadDll').addEventListener('click', function () {
+            window.location.href = 'https://github.com/DavuksDev/DMenuWEB/raw/main/output/DMenu.me_bitmono.dll';
+        });
+
+        document.getElementById('whatsNewButton').addEventListener('click', async function () {
+            const modal = document.getElementById('whats-new-modal');
+            const changesList = document.getElementById('changes-list');
+            changesList.innerHTML = '';
+
+            try {
+                const response = await fetch(GITHUB_API_URL);
+                if (!response.ok) throw new Error('Failed to fetch commit data.');
+
+                const data = await response.json();
+                let commitMessage = data.commit.message;
+
+                // Удаление "```" и "diff"
+                commitMessage = commitMessage.replace(/```/g, '').replace('diff', '');
+
+                // Разбиение сообщения на строки
+                commitMessage.split('\n').forEach(change => {
+                    const listItem = document.createElement('li');
+                    if (change.startsWith('+')) {
+                        listItem.className = 'green';
+                        listItem.textContent = change.slice(1).trim();
+                    } else if (change.startsWith('-')) {
+                        listItem.className = 'red';
+                        listItem.textContent = change.slice(1).trim();
+                    } else if (change.trim()) {
+                        listItem.textContent = change.trim();
+                    }
+                    changesList.appendChild(listItem);
+                });
+
+                modal.style.display = 'block';
+            } catch (error) {
+                console.error('Error fetching commit data:', error);
+                alert('Failed to load the latest commit. Please try again later.');
+            }
+        });
+
+        document.getElementById('closeWhatsNewModal').addEventListener('click', function () {
+            document.getElementById('whats-new-modal').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
